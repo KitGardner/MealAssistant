@@ -1,0 +1,138 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Kit Files\\Projects\\MealAssistant\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|c:\\kit files\\projects\\mealassistant\\mealassistant\\controllers\\ingredientcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|solutionrelative:mealassistant\\controllers\\ingredientcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|c:\\kit files\\projects\\mealassistant\\mealassistant\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|solutionrelative:mealassistant\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|c:\\kit files\\projects\\mealassistant\\mealassistant\\services\\ingredientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|solutionrelative:mealassistant\\services\\ingredientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|c:\\kit files\\projects\\mealassistant\\mealassistant\\data\\ingredientrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|solutionrelative:mealassistant\\data\\ingredientrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|c:\\kit files\\projects\\mealassistant\\mealassistant\\objects\\ingredient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{115408E8-8656-4C51-9258-C78EBECF44A1}|MealAssistant\\MealAssistant.csproj|solutionrelative:mealassistant\\objects\\ingredient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IngredientService.cs",
+              "DocumentMoniker": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Services\\IngredientService.cs",
+              "RelativeDocumentMoniker": "MealAssistant\\Services\\IngredientService.cs",
+              "ToolTip": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Services\\IngredientService.cs*",
+              "RelativeToolTip": "MealAssistant\\Services\\IngredientService.cs*",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAuwBMAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T20:48:45.725Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IngredientRepo.cs",
+              "DocumentMoniker": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Data\\IngredientRepo.cs",
+              "RelativeDocumentMoniker": "MealAssistant\\Data\\IngredientRepo.cs",
+              "ToolTip": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Data\\IngredientRepo.cs",
+              "RelativeToolTip": "MealAssistant\\Data\\IngredientRepo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T20:42:36.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "WeatherForecastController.cs",
+              "DocumentMoniker": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Controllers\\WeatherForecastController.cs",
+              "RelativeDocumentMoniker": "MealAssistant\\Controllers\\WeatherForecastController.cs",
+              "ToolTip": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Controllers\\WeatherForecastController.cs",
+              "RelativeToolTip": "MealAssistant\\Controllers\\WeatherForecastController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAowB0AAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T20:41:53.6Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Ingredient.cs",
+              "DocumentMoniker": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Objects\\Ingredient.cs",
+              "RelativeDocumentMoniker": "MealAssistant\\Objects\\Ingredient.cs",
+              "ToolTip": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Objects\\Ingredient.cs",
+              "RelativeToolTip": "MealAssistant\\Objects\\Ingredient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T20:40:35.464Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "a01128e9-9cf3-4ee4-9f82-e9a554358792",
+        "Display": 2,
+        "X": -5,
+        "Y": 55,
+        "Width": 1563,
+        "Height": 982,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "IngredientController.cs",
+              "DocumentMoniker": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Controllers\\IngredientController.cs",
+              "RelativeDocumentMoniker": "MealAssistant\\Controllers\\IngredientController.cs",
+              "ToolTip": "C:\\Kit Files\\Projects\\MealAssistant\\MealAssistant\\Controllers\\IngredientController.cs",
+              "RelativeToolTip": "MealAssistant\\Controllers\\IngredientController.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAowBgAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-23T20:53:19.449Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,72 +1,58 @@
 ﻿using MealAssistant.Objects;
+using Microsoft.EntityFrameworkCore;
 
 namespace MealAssistant.Data
 {
     public interface IIngredientRepo
     {
-        Ingredient GetIngredient(string name);
-        List<Ingredient> GetIngredients();
-        Guid CreateIngredient(Ingredient ingredient);
-        Guid UpdateIngredient(Ingredient ingredient);
-        bool DeleteIngredient(Guid id);
+        Task<Ingredient?> GetIngredient(string name);
+        Task<List<Ingredient>> GetIngredients();
+        Task CreateIngredient(Ingredient ingredient);
+        Task UpdateIngredient(Ingredient ingredient);
+        Task DeleteIngredient(Ingredient ingredient);
+        Task SaveChangeAsync();
     }
 
     public class IngredientRepo : IIngredientRepo
     {
-        public Guid CreateIngredient(Ingredient ingredient)
+
+        private readonly AppDbContext _context;
+
+        public IngredientRepo(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Ingredient GetIngredient(string name)
+        public async Task CreateIngredient(Ingredient ingredient)
         {
-            return new Ingredient
-            {
-                Name = name,
-                Id = Guid.NewGuid(),
-                Amount = 5
-            };
+            await _context.Ingredients.AddAsync(ingredient);
         }
 
-        public List<Ingredient> GetIngredients()
+        public async Task<Ingredient?> GetIngredient(string name)
         {
-            return new List<Ingredient>
-            {
-                new Ingredient
-                {
-                    Name = "Onion",
-                    Id = Guid.NewGuid(),
-                    Amount = 5
-                },
-                new Ingredient
-                {
-                    Name = "Carrot",
-                    Id = Guid.NewGuid(),
-                    Amount = 5
-                },
-                new Ingredient
-                {
-                    Name = "Beef",
-                    Id = Guid.NewGuid(),
-                    Amount = 5
-                },
-                new Ingredient
-                {
-                    Name = "Orange",
-                    Id = Guid.NewGuid(),
-                    Amount = 5
-                },
-            };
+            return await _context.Ingredients.Where(i => i.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
         }
 
-        public Guid UpdateIngredient(Ingredient ingredient)
+        public async Task<List<Ingredient>> GetIngredients()
         {
-            throw new NotImplementedException();
+            return await _context.Ingredients.ToListAsync();
         }
 
-        public bool DeleteIngredient(Guid id)
+        public async Task UpdateIngredient(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            _context.Ingredients.Update(ingredient);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteIngredient(Ingredient ingredient)
+        {
+            _context.Ingredients.Remove(ingredient);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SaveChangeAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

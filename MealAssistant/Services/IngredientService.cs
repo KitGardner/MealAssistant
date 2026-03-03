@@ -5,45 +5,45 @@ namespace MealAssistant.Services
 {
     public interface IIngredientService
     {
-        Ingredient GetIngredient(string name);
-        List<Ingredient> GetIngredients();
-        Guid CreateIngredient(Ingredient ingredient);
-        Guid UpdateIngredient(Ingredient ingredient);
-        bool DeleteIngredient(Guid id);
+        Task<Ingredient?> GetIngredient(string name);
+        Task<List<Ingredient>> GetIngredients();
+        Task CreateIngredient(Ingredient ingredient);
+        Task UpdateIngredient(Ingredient ingredient);
+        Task DeleteIngredient(Ingredient ingredient);
     }
 
     public class IngredientService : IIngredientService
     {
-        private IIngredientRepo? _ingredientRepo;
-        public IIngredientRepo IngredientRepo
+        private readonly IIngredientRepo _repository;
+
+        public IngredientService(IIngredientRepo repo)
         {
-            get => _ingredientRepo ??= new IngredientRepo();
-            set => _ingredientRepo = value;
+            _repository = repo;
         }
 
-        public Guid CreateIngredient(Ingredient ingredient)
+        public async Task CreateIngredient(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            await _repository.CreateIngredient(ingredient);
         }
 
-        public Ingredient GetIngredient(string name)
+        public async Task<Ingredient?> GetIngredient(string name)
         {
-            return IngredientRepo.GetIngredient(name);
+            return await _repository.GetIngredient(name);
         }
 
-        public List<Ingredient> GetIngredients()
+        public async Task<List<Ingredient>> GetIngredients()
         {
-            return IngredientRepo.GetIngredients();
+            return await _repository.GetIngredients();
         }
 
-        public Guid UpdateIngredient(Ingredient ingredient)
+        public async Task UpdateIngredient(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            await _repository.UpdateIngredient(ingredient);
         }
 
-        public bool DeleteIngredient(Guid id)
+        public async Task DeleteIngredient(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            await _repository.DeleteIngredient(ingredient);
         }
     }
 }

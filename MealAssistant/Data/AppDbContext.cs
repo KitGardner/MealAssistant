@@ -6,7 +6,24 @@ namespace MealAssistant.Data
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
         public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<AccountIngredient> AccountIngredients { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AccountIngredient>()
+                .HasKey(ai => new { ai.AccountId, ai.IngredientId });
+
+            modelBuilder.Entity<AccountIngredient>()
+                .HasOne(a => a.Account)
+                .WithMany(a => a.AccountIngredients)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AccountIngredient>()
+                .HasOne(a => a.Ingredient)
+                .WithMany(i => i.AccountIngredients)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

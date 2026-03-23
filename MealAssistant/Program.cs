@@ -1,4 +1,5 @@
 using MealAssistant.Data;
+using MealAssistant.Services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("SQLConnString");
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IIngredientRepo, IngredientRepo>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 var app = builder.Build();
 

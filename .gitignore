@@ -3,3 +3,5 @@
 .vscode/
 MealAssistant/bin/
 MealAssistant/obj/
+MealAssistant.Tests/bin/
+MealAssistant.Tests/obj/

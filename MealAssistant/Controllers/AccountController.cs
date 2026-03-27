@@ -18,7 +18,7 @@ namespace MealAssistant.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Account>> GetAccounts(string? username)
+        public async Task<List<AccountResponse>> GetAccounts(string? username)
         {
             var accounts = new List<Account>();
 
@@ -35,11 +35,20 @@ namespace MealAssistant.Controllers
                 accounts = await _accountService.GetAccounts();
             }
 
-            return accounts;
+            return accounts.Select(a => new AccountResponse
+            {
+                Id = a.Id,
+                FirstName = a.FirstName,
+                LastName = a.LastName,
+                Email = a.Email,
+                Username = a.Username,
+                Password = a.Password,
+                LastLoggedIn = a.LastLoggedIn
+            }).ToList();
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Account>> GetAccount(Guid id)
+        public async Task<ActionResult<AccountResponse>> GetAccount(Guid id)
         {
             var account = await _accountService.GetAccountById(id);
             if (account == null)
@@ -47,31 +56,59 @@ namespace MealAssistant.Controllers
                 return NotFound();
             }
 
-            return Ok(account);
+            return Ok(new AccountResponse
+            {
+                Id = account.Id,
+                FirstName = account.FirstName,
+                LastName = account.LastName,
+                Email = account.Email,
+                Username = account.Username,
+                Password = account.Password,
+                LastLoggedIn = account.LastLoggedIn
+            });
         }
 
         [HttpPost]
-        public async Task<ActionResult<Account>> CreateAccount(Account account)
+        public async Task<ActionResult<AccountResponse>> CreateAccount(AccountRequest accountDto)
         {
-            if (account == null)
+            if (accountDto == null)
             {
                 return BadRequest();
             }
+
+            var account = new Account
+            {
+                FirstName = accountDto.FirstName ?? string.Empty,
+                LastName = accountDto.LastName ?? string.Empty,
+                Email = accountDto.Email ?? string.Empty,
+                Username = accountDto.Username ?? string.Empty,
+                Password = accountDto.Password ?? string.Empty,
+                LastLoggedIn = accountDto.LastLoggedIn
+            };
 
             await _accountService.CreateAccount(account);
 
-            return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
+            return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, new AccountResponse
+            {
+                Id = account.Id,
+                FirstName = account.FirstName,
+                LastName = account.LastName,
+                Email = account.Email,
+                Username = account.Username,
+                Password = account.Password,
+                LastLoggedIn = account.LastLoggedIn
+            });
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, Account account)
+        public async Task<IActionResult> UpdateAccount(Guid id, AccountRequest accountDto)
         {
-            if (account == null)
+            if (accountDto == null)
             {
                 return BadRequest();
             }
 
-            if (account.Id != Guid.Empty && account.Id != id)
+            if (accountDto.Id != Guid.Empty && accountDto.Id != id)
             {
                 return BadRequest("Account id in body does not match route id.");
             }
@@ -82,14 +119,14 @@ namespace MealAssistant.Controllers
                 return NotFound();
             }
 
-            existing.FirstName = account.FirstName;
-            existing.LastName = account.LastName;
-            existing.Email = account.Email;
-            existing.Username = account.Username;
-            existing.Password = account.Password;
-            if (account.LastLoggedIn != default)
+            existing.FirstName = accountDto.FirstName ?? string.Empty;
+            existing.LastName = accountDto.LastName ?? string.Empty;
+            existing.Email = accountDto.Email ?? string.Empty;
+            existing.Username = accountDto.Username ?? string.Empty;
+            existing.Password = accountDto.Password ?? string.Empty;
+            if (accountDto.LastLoggedIn != default)
             {
-                existing.LastLoggedIn = account.LastLoggedIn;
+                existing.LastLoggedIn = accountDto.LastLoggedIn;
             }
 
             await _accountService.UpdateAccount(existing);

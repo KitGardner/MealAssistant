@@ -1,9 +1,12 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace MealAssistant.Data
 {
+    public interface ITransactionManager
+    {
+        Task ExecuteInTransactionWithSaveAsync(Func<Task> work);
+    }
+
+
     public class TransactionManager : ITransactionManager
     {
         private readonly AppDbContext _dbContext;

@@ -1,3 +1,5 @@
+﻿using System.Text.Json.Serialization;
+
 namespace MealAssistant.Objects
 {
     public class Account
@@ -10,6 +12,8 @@ namespace MealAssistant.Objects
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedOn { get; set; }
         public DateTime LastLoggedIn { get; set; }
+
+        [JsonIgnore]
         public List<AccountIngredient> AccountIngredients { get; set; } = new List<AccountIngredient>();
     }
 }

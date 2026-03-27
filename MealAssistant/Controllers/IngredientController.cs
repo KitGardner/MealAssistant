@@ -18,7 +18,7 @@ namespace MealAssistant.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Ingredient>> GetIngredients(string? name)
+        public async Task<List<IngredientResponse>> GetIngredients(string? name)
         {
             var ingredients = new List<Ingredient>();
             if (!string.IsNullOrEmpty(name))
@@ -34,11 +34,17 @@ namespace MealAssistant.Controllers
                 ingredients = await _ingredientService.GetIngredients();
             }
 
-            return ingredients;
+            return ingredients.Select(i => new IngredientResponse
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Description = i.Description,
+                LastUpdatedOn = i.LastUpdatedOn
+            }).ToList();
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)
+        public async Task<ActionResult<IngredientResponse>> GetIngredient(Guid id)
         {
             var ingredient = await _ingredientService.GetIngredientById(id);
             if (ingredient == null)
@@ -46,31 +52,50 @@ namespace MealAssistant.Controllers
                 return NotFound();
             }
 
-            return Ok(ingredient);
+            return Ok(new IngredientResponse
+            {
+                Id = ingredient.Id,
+                Name = ingredient.Name,
+                Description = ingredient.Description,
+                LastUpdatedOn = ingredient.LastUpdatedOn
+            });
         }
 
         [HttpPost]
-        public async Task<ActionResult<Ingredient>> CreateIngredient(Ingredient ingredient)
+        public async Task<ActionResult<IngredientResponse>> CreateIngredient(IngredientRequest ingredientDto)
         {
-            if (ingredient == null)
+            if (ingredientDto == null)
             {
                 return BadRequest();
             }
+
+            var ingredient = new Ingredient
+            {
+                Name = ingredientDto.Name ?? string.Empty,
+                Description = ingredientDto.Description ?? string.Empty,
+                LastUpdatedOn = ingredientDto.LastUpdatedOn
+            };
 
             await _ingredientService.CreateIngredient(ingredient);
 
-            return CreatedAtAction(nameof(GetIngredient), new { id = ingredient.Id }, ingredient);
+            return CreatedAtAction(nameof(GetIngredient), new { id = ingredient.Id }, new IngredientResponse
+            {
+                Id = ingredient.Id,
+                Name = ingredient.Name,
+                Description = ingredient.Description,
+                LastUpdatedOn = ingredient.LastUpdatedOn
+            });
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateIngredient(Guid id, Ingredient ingredient)
+        public async Task<IActionResult> UpdateIngredient(Guid id, IngredientRequest ingredientDto)
         {
-            if (ingredient == null)
+            if (ingredientDto == null)
             {
                 return BadRequest();
             }
 
-            if (ingredient.Id != Guid.Empty && ingredient.Id != id)
+            if (ingredientDto.Id != Guid.Empty && ingredientDto.Id != id)
             {
                 return BadRequest("Ingredient id in body does not match route id.");
             }
@@ -81,8 +106,8 @@ namespace MealAssistant.Controllers
                 return NotFound();
             }
 
-            existing.Name = ingredient.Name;
-            existing.Description = ingredient.Description;
+            existing.Name = ingredientDto.Name ?? string.Empty;
+            existing.Description = ingredientDto.Description ?? string.Empty;
             existing.LastUpdatedOn = DateTime.UtcNow;
 
             await _ingredientService.UpdateIngredient(existing);

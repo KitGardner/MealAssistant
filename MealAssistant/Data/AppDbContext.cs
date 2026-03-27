@@ -18,12 +18,14 @@ namespace MealAssistant.Data
             modelBuilder.Entity<AccountIngredient>()
                 .HasOne(a => a.Account)
                 .WithMany(a => a.AccountIngredients)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(a => a.AccountId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AccountIngredient>()
                 .HasOne(a => a.Ingredient)
                 .WithMany(i => i.AccountIngredients)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(a => a.IngredientId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

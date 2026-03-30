@@ -1,5 +1,6 @@
 using MealAssistant.Objects;
 using MealAssistant.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MealAssistant.Controllers
@@ -18,7 +19,7 @@ namespace MealAssistant.Controllers
         }
 
         [HttpGet]
-        public async Task<List<AccountResponse>> GetAccounts(string? username)
+        public async Task<ActionResult<List<AccountResponse>>> GetAccounts(string? username)
         {
             var accounts = new List<Account>();
 
@@ -29,22 +30,24 @@ namespace MealAssistant.Controllers
                 {
                     accounts.Add(matchingAccount);
                 }
+                else
+                {
+                    return NotFound();
+                }
             }
             else
             {
                 accounts = await _accountService.GetAccounts();
             }
 
-            return accounts.Select(a => new AccountResponse
+            return Ok(accounts.Select(a => new AccountResponse
             {
                 Id = a.Id,
                 FirstName = a.FirstName,
                 LastName = a.LastName,
                 Email = a.Email,
-                Username = a.Username,
-                Password = a.Password,
-                LastLoggedIn = a.LastLoggedIn
-            }).ToList();
+                Username = a.Username
+            }).ToList());
         }
 
         [HttpGet("{id:guid}")]
@@ -62,9 +65,7 @@ namespace MealAssistant.Controllers
                 FirstName = account.FirstName,
                 LastName = account.LastName,
                 Email = account.Email,
-                Username = account.Username,
-                Password = account.Password,
-                LastLoggedIn = account.LastLoggedIn
+                Username = account.Username
             });
         }
 
@@ -83,7 +84,6 @@ namespace MealAssistant.Controllers
                 Email = accountDto.Email ?? string.Empty,
                 Username = accountDto.Username ?? string.Empty,
                 Password = accountDto.Password ?? string.Empty,
-                LastLoggedIn = accountDto.LastLoggedIn
             };
 
             await _accountService.CreateAccount(account);
@@ -94,9 +94,7 @@ namespace MealAssistant.Controllers
                 FirstName = account.FirstName,
                 LastName = account.LastName,
                 Email = account.Email,
-                Username = account.Username,
-                Password = account.Password,
-                LastLoggedIn = account.LastLoggedIn
+                Username = account.Username
             });
         }
 
@@ -124,10 +122,6 @@ namespace MealAssistant.Controllers
             existing.Email = accountDto.Email ?? string.Empty;
             existing.Username = accountDto.Username ?? string.Empty;
             existing.Password = accountDto.Password ?? string.Empty;
-            if (accountDto.LastLoggedIn != default)
-            {
-                existing.LastLoggedIn = accountDto.LastLoggedIn;
-            }
 
             await _accountService.UpdateAccount(existing);
             return NoContent();

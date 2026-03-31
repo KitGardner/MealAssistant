@@ -22,28 +22,28 @@ namespace MealAssistant.Controllers
         }
 
         [HttpGet]
-        public async Task<List<AccountIngredientResponse>> GetAccountIngredients(Guid? accountId, Guid? ingredientId)
+        public async Task<ActionResult<List<AccountIngredientResponse>>> GetAccountIngredients(Guid? accountId, Guid? ingredientId)
         {
             if (accountId.HasValue && ingredientId.HasValue)
             {
                 var single = await _accountIngredientService.GetAccountIngredientByIds(accountId.Value, ingredientId.Value);
-                return single != null ? new List<AccountIngredientResponse> { new AccountIngredientResponse { AccountId = single.AccountId, IngredientId = single.IngredientId, Amount = single.Amount } } : new List<AccountIngredientResponse>();
+                return Ok(single != null ? new List<AccountIngredientResponse> { new AccountIngredientResponse { AccountId = single.AccountId, IngredientId = single.IngredientId, Amount = single.Amount } } : new List<AccountIngredientResponse>());
             }
 
             if (accountId.HasValue)
             {
                 var ingredients = await _accountIngredientService.GetAccountIngredientsByAccountId(accountId.Value);
-                return ingredients.Select(ai => new AccountIngredientResponse { AccountId = ai.AccountId, IngredientId = ai.IngredientId, Amount = ai.Amount }).ToList();
+                return Ok(ingredients.Select(ai => new AccountIngredientResponse { AccountId = ai.AccountId, IngredientId = ai.IngredientId, Amount = ai.Amount }).ToList());
             }
 
             if (ingredientId.HasValue)
             {
                 var ingredients = await _accountIngredientService.GetAccountIngredientsByIngredientId(ingredientId.Value);
-                return ingredients.Select(ai => new AccountIngredientResponse { AccountId = ai.AccountId, IngredientId = ai.IngredientId, Amount = ai.Amount }).ToList();
+                return Ok(ingredients.Select(ai => new AccountIngredientResponse { AccountId = ai.AccountId, IngredientId = ai.IngredientId, Amount = ai.Amount }).ToList());
             }
 
             var accountIngredients = await _accountIngredientService.GetAccountIngredients();
-            return accountIngredients.Select(ai => new AccountIngredientResponse { AccountId = ai.AccountId, IngredientId = ai.IngredientId, Amount = ai.Amount }).ToList();
+            return Ok(accountIngredients.Select(ai => new AccountIngredientResponse { AccountId = ai.AccountId, IngredientId = ai.IngredientId, Amount = ai.Amount }).ToList());
         }
 
         [HttpGet("{accountId:guid}/{ingredientId:guid}")]

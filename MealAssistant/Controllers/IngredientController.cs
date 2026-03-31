@@ -18,7 +18,7 @@ namespace MealAssistant.Controllers
         }
 
         [HttpGet]
-        public async Task<List<IngredientResponse>> GetIngredients(string? name)
+        public async Task<ActionResult<List<IngredientResponse>>> GetIngredients(string? name)
         {
             var ingredients = new List<Ingredient>();
             if (!string.IsNullOrEmpty(name))
@@ -28,19 +28,22 @@ namespace MealAssistant.Controllers
                 {
                     ingredients.Add(matchingIngredient);
                 }
+                else
+                {
+                    return NotFound();
+                }
             }
             else
             {
                 ingredients = await _ingredientService.GetIngredients();
             }
 
-            return ingredients.Select(i => new IngredientResponse
+            return Ok(ingredients.Select(i => new IngredientResponse
             {
                 Id = i.Id,
                 Name = i.Name,
                 Description = i.Description,
-                LastUpdatedOn = i.LastUpdatedOn
-            }).ToList();
+            }).ToList());
         }
 
         [HttpGet("{id:guid}")]
@@ -57,7 +60,6 @@ namespace MealAssistant.Controllers
                 Id = ingredient.Id,
                 Name = ingredient.Name,
                 Description = ingredient.Description,
-                LastUpdatedOn = ingredient.LastUpdatedOn
             });
         }
 
@@ -72,8 +74,7 @@ namespace MealAssistant.Controllers
             var ingredient = new Ingredient
             {
                 Name = ingredientDto.Name ?? string.Empty,
-                Description = ingredientDto.Description ?? string.Empty,
-                LastUpdatedOn = ingredientDto.LastUpdatedOn
+                Description = ingredientDto.Description ?? string.Empty
             };
 
             await _ingredientService.CreateIngredient(ingredient);
@@ -82,8 +83,7 @@ namespace MealAssistant.Controllers
             {
                 Id = ingredient.Id,
                 Name = ingredient.Name,
-                Description = ingredient.Description,
-                LastUpdatedOn = ingredient.LastUpdatedOn
+                Description = ingredient.Description
             });
         }
 
@@ -103,12 +103,23 @@ namespace MealAssistant.Controllers
             var existing = await _ingredientService.GetIngredientById(id);
             if (existing == null)
             {
-                return NotFound();
+                var newIngredient = new Ingredient
+                {
+                    Id = id,
+                    Name = ingredientDto.Name ?? string.Empty,
+                    Description = ingredientDto.Description ?? string.Empty,
+                };
+                await _ingredientService.CreateIngredient(newIngredient);
+                return CreatedAtAction(nameof(GetIngredient), new { id = newIngredient.Id }, new IngredientResponse
+                {
+                    Id = newIngredient.Id,
+                    Name = newIngredient.Name,
+                    Description = newIngredient.Description
+                });
             }
 
             existing.Name = ingredientDto.Name ?? string.Empty;
             existing.Description = ingredientDto.Description ?? string.Empty;
-            existing.LastUpdatedOn = DateTime.UtcNow;
 
             await _ingredientService.UpdateIngredient(existing);
 

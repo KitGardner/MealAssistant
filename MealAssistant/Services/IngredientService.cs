@@ -1,49 +1,61 @@
-﻿using MealAssistant.Data;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MealAssistant.Data;
 using MealAssistant.Objects;
-
 namespace MealAssistant.Services
 {
     public interface IIngredientService
     {
-        Ingredient GetIngredient(string name);
-        List<Ingredient> GetIngredients();
-        Guid CreateIngredient(Ingredient ingredient);
-        Guid UpdateIngredient(Ingredient ingredient);
-        bool DeleteIngredient(Guid id);
+        Task<Ingredient?> GetIngredient(string name);
+        Task<Ingredient?> GetIngredientById(Guid id);
+        Task<List<Ingredient>> GetIngredients();
+        Task CreateIngredient(Ingredient ingredient);
+        Task UpdateIngredient(Ingredient ingredient);
+        Task DeleteIngredient(Ingredient ingredient);
     }
-
     public class IngredientService : IIngredientService
     {
-        private IIngredientRepo? _ingredientRepo;
-        public IIngredientRepo IngredientRepo
-        {
-            get => _ingredientRepo ??= new IngredientRepo();
-            set => _ingredientRepo = value;
-        }
+        private readonly IIngredientRepo _repository;
+        private readonly ITransactionManager _transactionManager;
 
-        public Guid CreateIngredient(Ingredient ingredient)
+        public IngredientService(IIngredientRepo repo, ITransactionManager transactionManager)
         {
-            throw new NotImplementedException();
+            _repository = repo;
+            _transactionManager = transactionManager;
         }
-
-        public Ingredient GetIngredient(string name)
+        public async Task<Ingredient?> GetIngredient(string name)
         {
-            return IngredientRepo.GetIngredient(name);
+            return await _repository.GetIngredient(name);
         }
-
-        public List<Ingredient> GetIngredients()
+        public async Task<Ingredient?> GetIngredientById(Guid id)
         {
-            return IngredientRepo.GetIngredients();
+            return await _repository.GetIngredientById(id);
         }
-
-        public Guid UpdateIngredient(Ingredient ingredient)
+        public async Task<List<Ingredient>> GetIngredients()
         {
-            throw new NotImplementedException();
+            return await _repository.GetIngredients();
         }
-
-        public bool DeleteIngredient(Guid id)
+        public async Task CreateIngredient(Ingredient ingredient)
         {
-            throw new NotImplementedException();
+            await _transactionManager.ExecuteInTransactionWithSaveAsync(async () =>
+            {
+                await _repository.CreateIngredient(ingredient);
+            });
+        }
+        public async Task UpdateIngredient(Ingredient ingredient)
+        {
+            await _transactionManager.ExecuteInTransactionWithSaveAsync(async () =>
+            {
+                await _repository.UpdateIngredient(ingredient);
+            });
+        }
+        public async Task DeleteIngredient(Ingredient ingredient)
+        {
+            await _transactionManager.ExecuteInTransactionWithSaveAsync(async () =>
+            {
+                await _repository.DeleteIngredient(ingredient);
+            });
         }
     }
 }

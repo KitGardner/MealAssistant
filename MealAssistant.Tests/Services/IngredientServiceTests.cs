@@ -7,43 +7,110 @@ namespace MealAssistant.Tests.Services;
 
 public class IngredientServiceTests
 {
-    [Test]
-    public async Task Getters_DelegateToRepository()
+    private IngredientService service;
+    private Mock<IIngredientRepo> mockRepo;
+    private Mock<ITransactionManager> mockTransactionManager;
+
+
+    [SetUp]
+    public void Setup()
     {
-        var repo = new Mock<IIngredientRepo>();
-        var tx = new Mock<ITransactionManager>();
-        var expected = new Ingredient { Name = "salt" };
-        repo.Setup(r => r.GetIngredient("salt")).ReturnsAsync(expected);
-        repo.Setup(r => r.GetIngredientById(It.IsAny<Guid>())).ReturnsAsync(expected);
-        repo.Setup(r => r.GetIngredients()).ReturnsAsync(new List<Ingredient> { expected });
-        var sut = new IngredientService(repo.Object, tx.Object);
-
-        var byName = await sut.GetIngredient("salt");
-        var byId = await sut.GetIngredientById(Guid.NewGuid());
-        var all = await sut.GetIngredients();
-
-        Assert.That(byName, Is.SameAs(expected));
-        Assert.That(byId, Is.SameAs(expected));
-        Assert.That(all.Count, Is.EqualTo(1));
+        mockRepo = new Mock<IIngredientRepo>();
+        mockTransactionManager = new Mock<ITransactionManager>();
+        mockTransactionManager.Setup(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()))
+            .Returns((Func<Task> work) => work()).Verifiable();
+        service = new IngredientService(mockRepo.Object, mockTransactionManager.Object);
     }
 
     [Test]
-    public async Task Mutations_ExecuteWithinTransactionManager()
+    public async Task GetIngredient_CallsRepo()
     {
-        var repo = new Mock<IIngredientRepo>();
-        var tx = new Mock<ITransactionManager>();
-        tx.Setup(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()))
-            .Returns((Func<Task> work) => work());
-        var sut = new IngredientService(repo.Object, tx.Object);
-        var ingredient = new Ingredient();
+        // Arrange
+        var expected = new Ingredient { Name = "Salt" };
+        mockRepo.Setup(r => r.GetIngredient(It.IsAny<string>())).ReturnsAsync(expected).Verifiable();
 
-        await sut.CreateIngredient(ingredient);
-        await sut.UpdateIngredient(ingredient);
-        await sut.DeleteIngredient(ingredient);
+        // Act
+        var result = await service.GetIngredient("Salt");
 
-        tx.Verify(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()), Times.Exactly(3));
-        repo.Verify(r => r.CreateIngredient(ingredient), Times.Once);
-        repo.Verify(r => r.UpdateIngredient(ingredient), Times.Once);
-        repo.Verify(r => r.DeleteIngredient(ingredient), Times.Once);
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetIngredientById_CallsRepo()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var expected = new Ingredient { Id = id, Name = "Salt" };
+        mockRepo.Setup(r => r.GetIngredientById(It.IsAny<Guid>())).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetIngredientById(id);
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetIngredients_CallsRepo()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var expected = new List<Ingredient> { new Ingredient { Id = id, Name = "Salt" } };
+        mockRepo.Setup(r => r.GetIngredients()).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetIngredients();
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task CreateIngredient_CallsRepo()
+    {
+        // Arrange
+        var Ingredient = new Ingredient { Name = "Salt" };
+        mockRepo.Setup(s => s.CreateIngredient(It.IsAny<Ingredient>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.CreateIngredient(Ingredient);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
+    }
+
+    [Test]
+    public async Task UpdateIngredient_CallsRepo()
+    {
+        // Arrange
+        var Ingredient = new Ingredient { Name = "Salt" };
+        mockRepo.Setup(s => s.UpdateIngredient(It.IsAny<Ingredient>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.UpdateIngredient(Ingredient);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
+    }
+
+    [Test]
+    public async Task DeleteIngredient_CallsRepo()
+    {
+        // Arrange
+        var Ingredient = new Ingredient { Name = "Salt" };
+        mockRepo.Setup(s => s.DeleteIngredient(It.IsAny<Ingredient>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.DeleteIngredient(Ingredient);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
     }
 }

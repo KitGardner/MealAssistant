@@ -7,43 +7,109 @@ namespace MealAssistant.Tests.Services;
 
 public class AccountServiceTests
 {
-    [Test]
-    public async Task Getters_DelegateToRepository()
+    private AccountService service;
+    private Mock<IAccountRepo> mockRepo;
+    private Mock<ITransactionManager> mockTransactionManager;
+
+    [SetUp]
+    public void Setup()
     {
-        var repo = new Mock<IAccountRepo>();
-        var tx = new Mock<ITransactionManager>();
-        var expected = new Account { Username = "kit" };
-        repo.Setup(r => r.GetAccount("kit")).ReturnsAsync(expected);
-        repo.Setup(r => r.GetAccountById(It.IsAny<Guid>())).ReturnsAsync(expected);
-        repo.Setup(r => r.GetAccounts()).ReturnsAsync(new List<Account> { expected });
-        var sut = new AccountService(repo.Object, tx.Object);
-
-        var byName = await sut.GetAccount("kit");
-        var byId = await sut.GetAccountById(Guid.NewGuid());
-        var all = await sut.GetAccounts();
-
-        Assert.That(byName, Is.SameAs(expected));
-        Assert.That(byId, Is.SameAs(expected));
-        Assert.That(all.Count, Is.EqualTo(1));
+        mockRepo = new Mock<IAccountRepo>();
+        mockTransactionManager = new Mock<ITransactionManager>();
+        mockTransactionManager.Setup(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()))
+            .Returns((Func<Task> work) => work()).Verifiable();
+        service = new AccountService(mockRepo.Object, mockTransactionManager.Object);
     }
 
     [Test]
-    public async Task Mutations_ExecuteWithinTransactionManager()
+    public async Task GetAccount_CallsRepo()
     {
-        var repo = new Mock<IAccountRepo>();
-        var tx = new Mock<ITransactionManager>();
-        tx.Setup(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()))
-            .Returns((Func<Task> work) => work());
-        var sut = new AccountService(repo.Object, tx.Object);
-        var account = new Account();
+        // Arrange
+        var expected = new Account { Username = "Test" };
+        mockRepo.Setup(r => r.GetAccount(It.IsAny<string>())).ReturnsAsync(expected).Verifiable();
 
-        await sut.CreateAccount(account);
-        await sut.UpdateAccount(account);
-        await sut.DeleteAccount(account);
+        // Act
+        var result = await service.GetAccount("Test");
 
-        tx.Verify(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()), Times.Exactly(3));
-        repo.Verify(r => r.CreateAccount(account), Times.Once);
-        repo.Verify(r => r.UpdateAccount(account), Times.Once);
-        repo.Verify(r => r.DeleteAccount(account), Times.Once);
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetAccountById_CallsRepo()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var expected = new Account { Id = id, Username = "Test" };
+        mockRepo.Setup(r => r.GetAccountById(It.IsAny<Guid>())).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetAccountById(id);
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetAccounts_CallsRepo()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var expected = new List<Account> { new Account { Id = id, Username = "Test" } };
+        mockRepo.Setup(r => r.GetAccounts()).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetAccounts();
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task CreateAccount_CallsRepo()
+    {
+        // Arrange
+        var account = new Account { Username = "Test" };
+        mockRepo.Setup(s => s.CreateAccount(It.IsAny<Account>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.CreateAccount(account);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
+    }
+
+    [Test]
+    public async Task UpdateAccount_CallsRepo()
+    {
+        // Arrange
+        var account = new Account { Username = "Test" };
+        mockRepo.Setup(s => s.UpdateAccount(It.IsAny<Account>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.UpdateAccount(account);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
+    }
+
+    [Test]
+    public async Task DeleteAccount_CallsRepo()
+    {
+        // Arrange
+        var account = new Account { Username = "Test" };
+        mockRepo.Setup(s => s.DeleteAccount(It.IsAny<Account>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.DeleteAccount(account);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
     }
 }

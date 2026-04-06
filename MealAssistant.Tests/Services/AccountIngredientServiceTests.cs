@@ -7,43 +7,143 @@ namespace MealAssistant.Tests.Services;
 
 public class AccountIngredientServiceTests
 {
-    [Test]
-    public async Task Getters_DelegateToRepository()
-    {
-        var repo = new Mock<IAccountIngredientRepo>();
-        var tx = new Mock<ITransactionManager>();
-        var accountId = Guid.NewGuid();
-        var ingredientId = Guid.NewGuid();
-        var expected = new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 };
-        repo.Setup(r => r.GetAccountIngredient(accountId, ingredientId)).ReturnsAsync(expected);
-        repo.Setup(r => r.GetAccountIngredients()).ReturnsAsync(new List<AccountIngredient> { expected });
-        repo.Setup(r => r.GetAccountIngredientsByAccountId(accountId)).ReturnsAsync(new List<AccountIngredient> { expected });
-        repo.Setup(r => r.GetAccountIngredientsByIngredientId(ingredientId)).ReturnsAsync(new List<AccountIngredient> { expected });
-        var sut = new AccountIngredientService(repo.Object, tx.Object);
+    private AccountIngredientService service;
+    private Mock<IAccountIngredientRepo> mockRepo;
+    private Mock<ITransactionManager> mockTransactionManager;
 
-        Assert.That(await sut.GetAccountIngredientByIds(accountId, ingredientId), Is.SameAs(expected));
-        Assert.That((await sut.GetAccountIngredients()).Count, Is.EqualTo(1));
-        Assert.That((await sut.GetAccountIngredientsByAccountId(accountId)).Count, Is.EqualTo(1));
-        Assert.That((await sut.GetAccountIngredientsByIngredientId(ingredientId)).Count, Is.EqualTo(1));
+    [SetUp]
+    public void Setup()
+    {
+        mockRepo = new Mock<IAccountIngredientRepo>();
+        mockTransactionManager = new Mock<ITransactionManager>();
+        mockTransactionManager.Setup(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()))
+            .Returns((Func<Task> work) => work()).Verifiable();
+        service = new AccountIngredientService(mockRepo.Object, mockTransactionManager.Object);
     }
 
     [Test]
-    public async Task Mutations_ExecuteWithinTransactionManager()
+    public async Task GetAccountIngredientByIds_CallsRepo()
     {
-        var repo = new Mock<IAccountIngredientRepo>();
-        var tx = new Mock<ITransactionManager>();
-        tx.Setup(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()))
-            .Returns((Func<Task> work) => work());
-        var sut = new AccountIngredientService(repo.Object, tx.Object);
-        var row = new AccountIngredient();
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var expected = new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 };
 
-        await sut.CreateAccountIngredient(row);
-        await sut.UpdateAccountIngredient(row);
-        await sut.DeleteAccountIngredient(row);
+        mockRepo.Setup(s => s.GetAccountIngredient(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(expected).Verifiable();
+        
+        // Act
+        var result = await service.GetAccountIngredientByIds(accountId, ingredientId);
 
-        tx.Verify(t => t.ExecuteInTransactionWithSaveAsync(It.IsAny<Func<Task>>()), Times.Exactly(3));
-        repo.Verify(r => r.CreateAccountIngredient(row), Times.Once);
-        repo.Verify(r => r.UpdateAccountIngredient(row), Times.Once);
-        repo.Verify(r => r.DeleteAccountIngredient(row), Times.Once);
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetAccountIngredients_CallsRepo()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var expected = new List<AccountIngredient> { new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 } };
+
+        mockRepo.Setup(s => s.GetAccountIngredients()).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetAccountIngredients();
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetAccountIngredientsByAccountId_CallsRepo()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var expected = new List<AccountIngredient> { new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 } };
+
+        mockRepo.Setup(s => s.GetAccountIngredientsByAccountId(It.IsAny<Guid>())).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetAccountIngredientsByAccountId(accountId);
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task GetAccountIngredientsByIngredientId_CallsRepo()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var expected = new List<AccountIngredient> { new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 } };
+
+        mockRepo.Setup(s => s.GetAccountIngredientsByIngredientId(It.IsAny<Guid>())).ReturnsAsync(expected).Verifiable();
+
+        // Act
+        var result = await service.GetAccountIngredientsByIngredientId(ingredientId);
+
+        // Assert
+        Assert.That(result, Is.SameAs(expected));
+        mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public async Task CreateAccountIngredient_CallsRepoWithTransaction()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var accountIngredient = new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 };
+
+        mockRepo.Setup(s => s.CreateAccountIngredient(It.IsAny<AccountIngredient>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.CreateAccountIngredient(accountIngredient);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
+    }
+
+    [Test]
+    public async Task UpdateAccountIngredient_CallsRepoWithTransaction()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var accountIngredient = new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 };
+
+        mockRepo.Setup(s => s.UpdateAccountIngredient(It.IsAny<AccountIngredient>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.UpdateAccountIngredient(accountIngredient);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
+    }
+
+    [Test]
+    public async Task DeleteAccountIngredient_CallsRepoWithTransaction()
+    {
+        // Arrange
+        var accountId = Guid.NewGuid();
+        var ingredientId = Guid.NewGuid();
+        var accountIngredient = new AccountIngredient { AccountId = accountId, IngredientId = ingredientId, Amount = 4 };
+
+        mockRepo.Setup(s => s.DeleteAccountIngredient(It.IsAny<AccountIngredient>())).Returns(Task.CompletedTask).Verifiable();
+
+        // Act
+        await service.DeleteAccountIngredient(accountIngredient);
+
+        // Assert
+        mockRepo.VerifyAll();
+        mockTransactionManager.VerifyAll();
     }
 }

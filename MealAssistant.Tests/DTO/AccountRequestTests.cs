@@ -5,7 +5,10 @@ public class AccountRequestTests
     [Test]
     public void Properties_RoundTripValues()
     {
+        // Arrange
         var now = DateTime.UtcNow;
+        
+        // Act
         var dto = new AccountRequest
         {
             Id = Guid.NewGuid(),
@@ -16,6 +19,7 @@ public class AccountRequestTests
             Password = "pw"
         };
 
+        // Assert
         Assert.That(dto.Id, Is.Not.EqualTo(Guid.Empty));
         Assert.That(dto.FirstName, Is.EqualTo("F"));
         Assert.That(dto.LastName, Is.EqualTo("L"));

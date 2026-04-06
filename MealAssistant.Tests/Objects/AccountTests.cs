@@ -7,8 +7,10 @@ public class AccountTests
     [Test]
     public void Defaults_AreInitialized()
     {
+        // Act
         var account = new Account();
 
+        // Assert
         Assert.That(account.FirstName, Is.EqualTo(string.Empty));
         Assert.That(account.LastName, Is.EqualTo(string.Empty));
         Assert.That(account.Email, Is.EqualTo(string.Empty));

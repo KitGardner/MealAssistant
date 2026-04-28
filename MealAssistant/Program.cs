@@ -18,6 +18,7 @@ builder.Services.AddScoped<IAccountIngredientRepo, AccountIngredientRepo>();
 builder.Services.AddScoped<IAccountIngredientService, AccountIngredientService>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddRazorPages();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,8 +26,9 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.UseExceptionHandler();
+app.UseExceptionHandler("/error");
 
 app.MapControllers();
+app.MapRazorPages();
 
 app.Run();
